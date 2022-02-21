@@ -3,6 +3,7 @@ import {Connection, PublicKey} from '@solana/web3.js';
 import * as borsh from 'borsh';
 import { PlatformAccount, PlatformInfoSchema } from './schemas/plat-info-account';
 import * as anchor from '@project-serum/anchor';
+import { IDL } from 'sol_program/target/types/sol_program';
 
 @Component({
   selector: 'app-root',
@@ -21,10 +22,15 @@ export class AppComponent implements OnInit{
   ngOnInit() {
     const provider = anchor.Provider.local("https://api.devnet.solana.com");
 
+    const idl_file = require('sol_program/target/idl/sol_program.json');
+    // const idl = JSON.stringify(idl_file);
+
+    const programID = new PublicKey(idl_file.metadata.address);
+
     // Configure the client to use the local cluster.
     anchor.setProvider(provider);
 
-    this.program = anchor.workspace.TokenProxy;
+    this.program = new anchor.Program(IDL, programID, provider);
   }
 
   public async setUri(option: number) {
